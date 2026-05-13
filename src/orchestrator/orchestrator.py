@@ -1,7 +1,10 @@
-﻿import os
+import os
+from dotenv import load_dotenv
 from rich.console import Console
-from langchain_ollama import ChatOllama
 from langchain_groq import ChatGroq
+
+# Charger le .env pour garantir GROQ_API_KEY disponible
+load_dotenv()
 
 from src.agents.collector_agent import CollectorAgent
 from src.agents.analyst_agent import AnalystAgent
@@ -14,9 +17,10 @@ from src.tools.formatter_tool import FormatterTool
 console = Console()
 
 def get_llm():
-    if os.getenv("GROQ_API_KEY"):
-        return ChatGroq(model="llama-3.1-8b-instant", temperature=0)
-    return ChatOllama(model=os.getenv("OLLAMA_MODEL", "llama3.2:1b"), temperature=0)
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise EnvironmentError("GROQ_API_KEY manquante. Ajoutez-la dans le fichier .env")
+    return ChatGroq(model="llama-3.1-8b-instant", temperature=0, api_key=api_key)
 
 class MediSearchOrchestrator:
     def __init__(self):

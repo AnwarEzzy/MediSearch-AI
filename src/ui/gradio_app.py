@@ -2,8 +2,13 @@ import sys
 import os
 from pathlib import Path
 import gradio as gr
+from dotenv import load_dotenv
 
-sys.path.append(str(Path(__file__).parent.parent.parent))
+# Charger le .env AVANT tout import qui utilise os.getenv()
+_root = Path(__file__).parent.parent.parent
+load_dotenv(dotenv_path=_root / ".env")
+
+sys.path.append(str(_root))
 
 from src.orchestrator.orchestrator import get_llm
 from src.agents.collector_agent import CollectorAgent
@@ -110,10 +115,10 @@ with gr.Blocks(title="MediSearch AI") as demo:
     )
 
 if __name__ == "__main__":
-    print("Démarrage de l'interface Gradio...")
+    print("Demarrage de l'interface Gradio...")
     demo.launch(
         server_name="0.0.0.0",
-        server_port=7860,
+        server_port=None,   # Gradio trouve automatiquement un port libre
         share=False,
         theme=gr.themes.Soft()
     )
